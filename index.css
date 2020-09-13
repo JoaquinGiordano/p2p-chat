@@ -29,7 +29,7 @@ body {
     border: none;
     border-radius: 5px;
     padding: 5px;
-    width: 80%;
+    width: 55%;
 }
 
 #dest_container,
@@ -38,6 +38,10 @@ body {
     border-radius: 5px;
     padding: 5px;
     width: 150px;
+}
+
+.chat_message {
+    padding: 2px;
 }
 
 button {

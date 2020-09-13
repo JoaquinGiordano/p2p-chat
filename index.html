@@ -9,13 +9,18 @@
     <body>
         <div id="general_container">
             <h1 id="id_container">Your ID is: </h1>
-            <input type="text" id="name_container" placeholder="Name" />
-            <input type="text" id="dest_container" placeholder="Dest ID" />
-            <button id="send_button" onclick="createConnection()">
-                Connect
-            </button>
+
+            <div id="config_container">
+                <input type="text" id="dest_container" placeholder="Dest ID" />
+
+                <button id="send_button" onclick="createConnection()">
+                    Connect
+                </button>
+            </div>
+
             <div id="chat_container"></div>
-            <input type="text" id="message" />
+            <input type="text" id="name_container" placeholder="Name" />
+            <input type="text" id="message" placeholder="Message" />
 
             <button id="send_button" onclick="sendMessage()">Send</button>
         </div>

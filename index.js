@@ -6,6 +6,7 @@ peer.on('open', (id) => {
 })
 
 peer.on('connection', (conn) => {
+    document.querySelector('#config_container').style.display = 'none'
     writeOnChat('An user has entered to your chat')
     if (!connection) {
         connection = conn
@@ -18,14 +19,16 @@ peer.on('connection', (conn) => {
 const writeOnChat = (text, user) => {
     let chat_container = document.querySelector('#chat_container')
     if (user) {
-        chat_container.innerHTML += `<b>${user}</b>: <span>${text}</span><br/>`
+        chat_container.innerHTML += `<div class='chat_message'><b>${user}</b>: <span>${text}</span></div>`
     } else {
-        chat_container.innerHTML += `<b>${text}</b><br/>`
+        chat_container.innerHTML += `<div class='chat_message'><b>${text}</b></div>`
     }
 }
 
 const createConnection = () => {
     connection = peer.connect(document.querySelector('#dest_container').value)
+    document.querySelector('#config_container').style.display = 'none'
+    writeOnChat("You've been connected with an user")
     connection.on('data', (data) => {
         writeOnChat(data.message, data.user)
     })
@@ -34,10 +37,14 @@ const createConnection = () => {
 const sendMessage = () => {
     let userName = document.querySelector('#name_container').value
     let message = document.querySelector('#message').value
-    if (connection) {
-        writeOnChat(message, userName)
-        connection.send({ user: userName, message: message })
+    if (userName && message) {
+        if (connection) {
+            writeOnChat(message, userName)
+            connection.send({ user: userName, message: message })
+        } else {
+            writeOnChat('Please create a connection')
+        }
     } else {
-        writeOnChat('Please create a connection')
+        alert('Please choose an username and write a message before send')
     }
 }

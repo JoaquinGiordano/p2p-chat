@@ -37,16 +37,23 @@ const createConnection = () => {
 }
 
 const sendMessage = () => {
-    let userName = document.querySelector('#name_container').value
-    let message = document.querySelector('#message').value
+    let userName = document.querySelector('#name_container')
+    let message = document.querySelector('#message')
     if (userName && message) {
         if (connection) {
-            writeOnChat(message, userName, false)
-            connection.send({ user: userName, message: message })
+            writeOnChat(message.value, userName.value, false)
+            connection.send({ user: userName.value, message: message.value })
+            message.value = ''
         } else {
-            writeOnChat('Please create a connection')
+            alert('Please create a connection')
         }
     } else {
         alert('Please choose an username and write a message before send')
     }
 }
+
+document.querySelector('#message').addEventListener('keypress', (key) => {
+    if (key.code === 'Enter') {
+        sendMessage()
+    }
+})

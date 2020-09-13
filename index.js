@@ -12,14 +12,16 @@ peer.on('connection', (conn) => {
         connection = conn
     }
     connection.on('data', (data) => {
-        writeOnChat(data.message, data.user)
+        writeOnChat(data.message, data.user, true)
     })
 })
 
-const writeOnChat = (text, user) => {
+const writeOnChat = (text, user, recived) => {
     let chat_container = document.querySelector('#chat_container')
     if (user) {
-        chat_container.innerHTML += `<div class='chat_message'><b>${user}</b>: <span>${text}</span></div>`
+        chat_container.innerHTML += `<div class='chat_message'><b class='${
+            recived ? 'recived' : 'sent'
+        }'>${user}</b>: <span>${text}</span></div>`
     } else {
         chat_container.innerHTML += `<div class='chat_message'><b>${text}</b></div>`
     }
@@ -30,7 +32,7 @@ const createConnection = () => {
     document.querySelector('#config_container').style.display = 'none'
     writeOnChat("You've been connected with an user")
     connection.on('data', (data) => {
-        writeOnChat(data.message, data.user)
+        writeOnChat(data.message, data.user, true)
     })
 }
 
@@ -39,7 +41,7 @@ const sendMessage = () => {
     let message = document.querySelector('#message').value
     if (userName && message) {
         if (connection) {
-            writeOnChat(message, userName)
+            writeOnChat(message, userName, false)
             connection.send({ user: userName, message: message })
         } else {
             writeOnChat('Please create a connection')

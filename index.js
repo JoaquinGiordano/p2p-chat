@@ -1,5 +1,5 @@
 let peer = new Peer()
-let connection
+let connections = []
 
 peer.on('open', (id) => {
     document.querySelector('#id_container').innerHTML += id
@@ -8,10 +8,15 @@ peer.on('open', (id) => {
 peer.on('connection', (conn) => {
     document.querySelector('#config_container').style.display = 'none'
     writeOnChat('An user has entered to your chat')
-    if (!connection) {
-        connection = conn
+    if (connections.length == 0) {
+        connections = [conn]
+    } else {
+        connections = [...connections, conn]
     }
-    connection.on('data', (data) => {
+
+    connections[connections.length - 1].on('data', (data) => {
+        console.log(data)
+        sendMessage(false, data.user, data.message)
         writeOnChat(data.message, data.user, true)
     })
 })
@@ -28,22 +33,47 @@ const writeOnChat = (text, user, recived) => {
 }
 
 const createConnection = () => {
-    connection = peer.connect(document.querySelector('#dest_container').value)
+    connections = [
+        ...connections,
+        peer.connect(document.querySelector('#dest_container').value),
+    ]
+    document.querySelector('#id_container').innerHTML = `Room ID: ${
+        document.querySelector('#dest_container').value
+    }`
     document.querySelector('#config_container').style.display = 'none'
     writeOnChat("You've been connected with an user")
-    connection.on('data', (data) => {
-        writeOnChat(data.message, data.user, true)
+    connections[connections.length - 1].on('data', (data) => {
+        if (data.user != document.querySelector('#name_container').value) {
+            writeOnChat(data.message, data.user, true)
+        }
     })
 }
 
-const sendMessage = () => {
-    let userName = document.querySelector('#name_container')
-    let message = document.querySelector('#message')
+const sendMessage = (sendYourself, paramUserName, paramMessage) => {
+    let userName
+    let message
+
+    if (paramUserName && paramMessage) {
+        userName = paramUserName
+        message = paramMessage
+    } else {
+        userName = document.querySelector('#name_container').value
+        message = document.querySelector('#message').value
+    }
+
     if (userName && message) {
-        if (connection) {
-            writeOnChat(message.value, userName.value, false)
-            connection.send({ user: userName.value, message: message.value })
-            message.value = ''
+        if (connections.length > 0) {
+            if (sendYourself) {
+                writeOnChat(message, userName, false)
+            }
+
+            connections.forEach((connection) => {
+                connection.send({
+                    user: userName,
+                    message: message,
+                })
+            })
+            document.querySelector('#message').value = ''
         } else {
             alert('Please create a connection')
         }
@@ -54,6 +84,6 @@ const sendMessage = () => {
 
 document.querySelector('#message').addEventListener('keypress', (key) => {
     if (key.code === 'Enter') {
-        sendMessage()
+        sendMessage(true)
     }
 })
